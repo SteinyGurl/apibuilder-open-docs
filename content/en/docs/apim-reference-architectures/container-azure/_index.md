@@ -11,9 +11,6 @@ Table of Contents
 =================
 
 [1. Overview](#overview)  
-[1.1. References](#references)  
-[1.1.1. List of tables](#list-of-tables)  
-[1.1.2. List of pictures](#list-of-pictures)  
 [2. General architecture](#general-architecture)  
 [2.1. Principles](#principles)  
 [2.2. Target use case](#target-use-case)  

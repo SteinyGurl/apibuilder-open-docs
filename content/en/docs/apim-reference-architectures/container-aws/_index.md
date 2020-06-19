@@ -1,144 +1,67 @@
 
 {
-"title": "API Management Container Reference Architecture on AWS",
+"title": "Axway AMPLIFY™ API Management Container Reference Architecture on AWS",
 "linkTitle": "API Management Container Reference Architecture on AWS",
 "weight": 30,
 "date": "2019-12-20",
-"description": "Axway AMPLIFY™ API Management Container Reference Architecture on **AWS**"
+"description": "Reference Architecture"
 }
--- -- --------------------------------------------------------------------------- --
 
-
-Architecture
-Axway AMPLIFY™ API Management Container Reference Architecture on **AWS**
-Version 1.0 December 20, 2019
-
-
-
-1.
-
-Document History
-
-Version   Date         Update origin
---------- ------------ ---------------
-1.0       2019-12-20   First version
-
-Table of Contents {#table-of-contents .TOC-Heading}
+Table of Contents
 =================
 
-[1. Overview 6](#overview)
-
-[1.1. References 6](#references)
-
-[1.1.1. List of tables 6](#list-of-tables)
-
-[1.1.2. List of pictures 6](#list-of-pictures)
-
-[2. General architecture 7](#general-architecture)
-
-[2.1. Principles 7](#principles)
-
-[2.2. Target use case 8](#target-use-case)
-
-[2.3. Additional components and considerations
-9](#additional-components-and-considerations)
-
-[2.3.1. Container registry 9](#container-registry)
-
-[2.3.2. Bastion host 9](#bastion-host)
-
-[2.3.3. DevOps Pipeline 10](#devops-pipeline)
-
-[2.3.4. SMTP Relay 10](#smtp-relay)
-
-[2.4. Performance goals 10](#performance-goals)
-
-[3. Implementation details 11](#implementation-details)
-
-[3.1. Diagram 11](#diagram)
-
-[3.2. Choice of runtime infrastructure components
-11](#choice-of-runtime-infrastructure-components)
-
-[3.2.1. VM sizes 12](#vm-sizes)
-
-[3.2.2. Storage 12](#storage)
-
-[3.2.3. Load balancer 14](#load-balancer)
-
-[3.2.4. Network 14](#network)
-
-[3.3. Kubernetes considerations 15](#kubernetes-considerations)
-
-[3.3.1. Deployment options 15](#deployment-options)
-
-[3.3.2. Namespaces 16](#namespaces)
-
-[3.3.3. Pod resource limits 17](#pod-resource-limits)
-
-[3.3.4. Components healthcheck 17](#components-healthcheck)
-
-[3.3.5. Affinity and anti-affinity mode
-17](#affinity-and-anti-affinity-mode)
-
-[3.3.6. Autoscaling 18](#autoscaling)
-
-[3.3.7. External traffic 18](#external-traffic)
-
-[3.3.8. Secrets 19](#secrets)
-
-[3.4. API Management implementation details
-20](#api-management-implementation-details)
-
-[3.4.1. Admin Node Manager 20](#admin-node-manager)
-
-[3.4.2. API Manager UI 21](#api-manager-ui)
-
-[3.4.3. API Gateway/Manager (traffic) 22](#api-gatewaymanager-traffic)
-
-[3.5. Cassandra considerations 23](#cassandra-considerations)
-
-[3.6. Security considerations 23](#_Toc27752104)
-
-[3.7. SQL database considerations 23](#sql-database-considerations)
-
-[3.8. Logging/tracing 23](#loggingtracing)
-
-[3.9. Environmentalization and Promotion
-24](#environmentalization-and-promotion)
-
-[3.10. Infrastructure components for AWS deployment
-25](#infrastructure-components-for-aws-deployment)
-
-[3.11. Performance testing 25](#performance-testing)
-
-[4. Maintenance 26](#maintenance)
-
-[4.1. New configurations 26](#new-configurations)
-
-[4.2. Product updates 27](#product-updates)
-
-[4.2.1. Installing a patch 27](#installing-a-patch)
-
-[4.2.2. Installing a service pack 28](#installing-a-service-pack)
-
-[4.2.3. Upgrading the product 28](#upgrading-the-product)
-
-[4.2.4. Adding customization 29](#adding-customization)
-
-[4.3. Pushing a new Docker image to your Kubernetes cluster
-29](#pushing-a-new-docker-image-to-your-kubernetes-cluster)
-
-[5. Configuration and data backups 29](#configuration-and-data-backups)
-
-[6. Disaster recovery 30](#disaster-recovery)
-
-[7. Known constraints and roadmap 30](#known-constraints-and-roadmap)
-
-[8. Appendix A -- Glossary of Terms 31](#appendix-a-glossary-of-terms)
+[1. Overview](#overview)  
+[2. General architecture](#general-architecture)  
+[2.1. Principles](#principles)  
+[2.2. Target use case](#target-use-case)  
+[2.3. Additional components and considerations](#additional-components-and-considerations)  
+[2.3.1. Container registry](#container-registry)  
+[2.3.2. Bastion host](#bastion-host)  
+[2.3.3. DevOps Pipeline](#devops-pipeline)  
+[2.3.4. SMTP Relay](#smtp-relay)  
+[2.4. Performance goals](#performance-goals)  
+[3. Implementation details](#implementation-details)  
+[3.1. Diagram](#diagram)  
+[3.2. Choice of runtime infrastructure components](#choice-of-runtime-infrastructure-components)  
+[3.2.1. VM sizes](#vm-sizes)  
+[3.2.2. Storage](#storage)  
+[3.2.3. Load balancer](#load-balancer)  
+[3.2.4. Network](#network)  
+[3.3. Kubernetes considerations](#kubernetes-considerations)  
+[3.3.1. Deployment options](#deployment-options)  
+[3.3.2. Namespaces](#namespaces)  
+[3.3.3. Pod resource limits](#pod-resource-limits)  
+[3.3.4. Components healthcheck](#components-healthcheck)  
+[3.3.5. Affinity and anti-affinity mode](#affinity-and-anti-affinity-mode)  
+[3.3.6. Autoscaling](#autoscaling)  
+[3.3.7. External traffic](#external-traffic)  
+[3.3.8. Secrets](#secrets)  
+[3.4. API Management implementation details](#api-management-implementation-details)  
+[3.4.1. Admin Node Manager](#admin-node-manager)  
+[3.4.2. API Manager UI](#api-manager-ui)  
+[3.4.3. API Gateway/Manager (traffic)](#api-gatewaymanager-traffic)  
+[3.5. Cassandra considerations](#cassandra-considerations)  
+[3.6. Security considerations](#_Toc27752104)  
+[3.7. SQL database considerations](#sql-database-considerations)  
+[3.8. Logging/tracing](#loggingtracing)  
+[3.9. Environmentalization and Promotion](#environmentalization-and-promotion)  
+[3.10. Infrastructure components for AWS deployment](#infrastructure-components-for-aws-deployment)  
+[3.11. Performance testing](#performance-testing)  
+[4. Maintenance](#maintenance)  
+[4.1. New configurations](#new-configurations)  
+[4.2. Product updates](#product-updates)  
+[4.2.1. Installing a patch](#installing-a-patch)  
+[4.2.2. Installing a service pack](#installing-a-service-pack)  
+[4.2.3. Upgrading the product](#upgrading-the-product)  
+[4.2.4. Adding customization](#adding-customization)  
+[4.3. Pushing a new Docker image to your Kubernetes cluster](#pushing-a-new-docker-image-to-your-kubernetes-cluster)  
+[5. Configuration and data backups](#configuration-and-data-backups)  
+[6. Disaster recovery](#disaster-recovery)  
+[7. Known constraints and roadmap](#known-constraints-and-roadmap)  
+[8. Appendix A -- Glossary of Terms](#appendix-a-glossary-of-terms)
 
 Summary
-
+=======
 This document provides a reference architecture guide for deploying
 AMPLIFY API Management (APIM) using Externally Managed Topology ([EMT
 mode](https://docs.axway.com/bundle/axway-open-docs/page/docs/apim_installation/apigw_containers/container_getstarted/index.html)).
@@ -183,47 +106,6 @@ The target audience for the document is architects, developers, and
 operations personnel. To get the most value from this document, a reader
 should have a good knowledge of Docker, Kubernetes, and API management.
 
-References
-----------
-
-### List of tables
-
-[**Table 1: Deployment architecture - global recommendations**
-8](#_Toc27752122)
-
-[**Table 2: List of assets for high availability** 12](#_Toc27752123)
-
-[**Table 3: Details of disk spaces** 13](#_Toc27752124)
-
-[**Table 4: Network flow rules** 15](#_Toc27752125)
-
-[**Table 5: Kubernetes secrets list** 19](#_Toc27752126)
-
-[**Table 6: Performance validation threshold** 25](#_Toc27752127)
-
-### List of pictures
-
-[**Figure 1: Layered deployment**
-7](#_Toc27752128)
-
-[**Figure 2: Components overview**
-9](#_Toc27752129)
-
-[**Figure 3: Technical diagram for HA deployment**
-11](#_Toc27752130)
-
-[**Figure 4: Disk space setting in Policy Studio**
-13](#_Toc27752131)
-
-[**Figure 5: Load balancer with ingress controller**
-14](#_Toc27752132)
-
-[**Figure 6: Network flow diagram**
-14](#_Toc27752133)
-
-[**Figure 7: Diagram of a Kubernetes cluster**
-20](#_Toc27752134)
-
 General architecture
 ====================
 
@@ -265,8 +147,7 @@ manages many important aspects of runtime, security, and operations:
 In generic terms, reference architecture can be built by stacking four
 layers of different capabilities:
 
-![](/Images/apim-reference-architectures/container-aws/image1.png){width="6.145833333333333in"
-height="2.842361111111111in"}
+![](/Images/apim-reference-architectures/container-aws/image1.png)
 
 Notice that the packaging of API Management for deployment has changed
 in the EMT mode. Customers need to build a new Docker image for any new
@@ -280,20 +161,17 @@ repository for created images. To help customers with setting up a
 required environment, the following table describes the required and
 recommended options.
 
-Description                                                                                                   Required?
-------------------------------------------------------------------------------------------------------------- -------------
-A DevOps pipeline is strongly recommended for building Docker images                                          Recommended
-A storage system is required with the capacity to store dedicated data and to share data between components   Required
-A bastion is required for administration tasks on API management and Kubernetes                               Required
-Kubernetes must have a container registry to pull Docker images.                                              Required
-
-**\
-**[]{#_Toc27752122 .anchor}**Table** **1: Deployment architecture -
-global recommendations**
+|Description|Required?|
+|----|----|
+|A DevOps pipeline is strongly recommended for building Docker images                                          |Recommended|
+|A storage system is required with the capacity to store dedicated data and to share data between components   |Required|
+|A bastion is required for administration tasks on API management and Kubernetes                               |Required|
+|Kubernetes must have a container registry to pull Docker images.                                              |Required|
+*Table 1: Deployment architecture - global recommendations*
 
 Besides [Docker](https://www.docker.com/resources/what-container) and
 [Kubernetes](https://kubernetes.io), we use [Helm](https://helm.sh)
-charts to describe the entire deployment configuration. Using Helm
+scharts to describe the entire deployment configuration. Using Helm
 provides an efficient way to package all configuration parameters for
 Kubernetes and API Management containers to be deployed with a single
 command.
@@ -316,27 +194,19 @@ system. API Gateway Manager UI can be used to view the traffic monitor
 and events data.
 
 A dedicated deployment environment requires:
-
 -   Kubernetes cluster
-
 -   Docker registry
-
 -   Cassandra cluster
-
 -   RDBMS
-
 -   Storage system for shared volume
-
 -   Monitoring system
-
 -   Bastion system for cluster access
+-   DevOps pipeline(s) to control Docker image build and deployment to a target environment
 
--   DevOps pipeline(s) to control Docker image build and deployment to a
-target environment
-
-![](/Images/apim-reference-architectures/container-aws/image2.jpg){width="6.983333333333333in" height="3.35in"}The
-following diagram shows a general architecture of a single cluster
+The following diagram shows a general architecture of a single cluster
 configuration:
+
+![](/Images/apim-reference-architectures/container-aws/image2.jpg)
 
 Additional components and considerations
 ----------------------------------------
@@ -357,11 +227,11 @@ credentials during Helm package deployment. We suggest using Kubernetes
 secrets. Besides registry access credentials, you will need to maintain
 additional sensitive data that is described in the following table.
 
-Description                                                                                                              Required?
------------------------------------------------------------------------------------------------------------------------- -------------
-Docker images contain such sensitive data as license key, certificate, and configuration. This data must be protected.   Required
-The password is sensitive and must be encrypted in the system.                                                           Required
-Operations should define a clear tag strategy for Docker images tagging.                                                 Recommended
+|Description|Required?|
+|----|----|
+|Docker images contain such sensitive data as license key, certificate, and configuration. This data must be protected. |Required|
+|The password is sensitive and must be encrypted in the system.|Required|
+|Operations should define a clear tag strategy for Docker images tagging.|Recommended|
 
 ### Bastion host
 
@@ -369,11 +239,8 @@ Administrative tasks should be executed safely. We use a bastion host to
 bridge to the following instances via the internet:
 
 -   Kubernetes master nodes for managing a cluster
-
 -   Kubernetes Dashboard
-
 -   RBDMS and Cassandra
-
 -   Debugging any issue with a Kubernetes cluster
 
 The bastion must have high traceability with specific RBAC permissions
@@ -390,9 +257,7 @@ Axway provides several CLI tools that fit nicely into a DevOps pipeline.
 Later in the document, we will describe:
 
 -   Docker build scripts
-
 -   API promotion tool (*apimanager-promote*)
-
 -   GitHub projects
 
 ### SMTP Relay
@@ -419,8 +284,9 @@ This chapter details the configuration for each component.
 Diagram
 -------
 
-![](/Images/apim-reference-architectures/container-aws/image3.png){width="7.105555555555555in"
-height="4.957638888888889in"}Figure 3 shows the recommended reference
+![](/Images/apim-reference-architectures/container-aws/image3.png)
+
+This figure shows the recommended reference
 architecture diagram. It is designed with High Availability (HA) in
 mind. An HA deployment requires redundancy and high throughput for all
 infrastructure components and networks. To reach this target, components
@@ -443,26 +309,23 @@ availability zones.
 The following table lists the number of runtime components in this
 configuration.
 
-Assets                                 Spec
--------------------------------------- ------
-Master nodes                           3
-Worker nodes^\*^                       3
-Cassandra nodes                        3
-RDBMS instance                         2
-Dedicated storage^\*^                  70GB
-Shared storage^\*^                     20GB
-External IP (public or private) ^\*^   1
-Load balancer                          1
-External identity access management    1
-Docker registry                        1
-Bastion                                1
-Worker pipeline                        1
+|Assets                                 |Spec|
+|----|----|
+|Master nodes                           |3|
+|Worker nodes                       |3|
+|Cassandra nodes                        |3|
+|RDBMS instance                         |2|
+|Dedicated storage                  |70GB|
+|Shared storage                     |20GB|
+|External IP (public or private)    |1|
+|Load balancer                          |1|
+|External identity access management    |1|
+|Docker registry                        |1|
+|Bastion                                |1|
+|Worker pipeline                        |1|
+*Table 2: List of assets for high availability*
 
-**\
-**[]{#_Toc27752123 .anchor}**Table** **2: List of assets for high
-availability**
-
-> ^These\ values\ are\ the\ minimum\ recommended\ starting\ point.\ Your\ actual\ values\ will\ depend\ on\ many\ factors,\ like\ the\ number\ of\ APIs,\ payload\ size,\ etc.^
+> These values are the minimum recommended starting point. Your actual values will depend on many factors, like the number of APIs, payload size, etc.
 
 ### VM sizes
 
@@ -470,17 +333,11 @@ These are the recommended parameters for the VMs:
 
 -   Master node: 2vCPU and 8GB memory (for master node according to
 Kubernetes sizing recommendation for 10 workers nodes; see complete
-description
-[here](https://kubernetes.io/docs/setup/best-practices/cluster-large/))
-
+description [here](https://kubernetes.io/docs/setup/best-practices/cluster-large/))
 -   Worker node (for API Gateway/Manager/ANM): 2vCPU and 8GB memory
-
 -   Worker node (for monitoring tools): 2vCPU and 8GB memory
-
 -   Cassandra node: 2vCPU and 8GB memory with 5GB/s
-
--   SQL database node (estimation based for Mysql): 2vCPU (mono-core)
-and 4GB memory
+-   SQL database node (estimation based for Mysql): 2vCPU (mono-core) and 4GB memory
 
 ### Storage
 
@@ -503,9 +360,8 @@ the minimal configuration. But autoscaling can increase this number to
 
 Please, follow this method to estimate disk space:
 
-> ![](/Images/apim-reference-architectures/container-aws/image4.png){width="3.446527777777778in"
-> height="1.7916666666666667in"}*Max\_disk\_space x
-> API\_gateway\_max\_replica + 1GB = recommended\_disk\_space*
+![](/Images/apim-reference-architectures/container-aws/image4.png)
+>Max_disk_space x API_gateway_max_replica + 1GB = recommended_disk_space
 
 It is important to select a proper disk option for logs in your target
 environment (cloud or on-premises). In the Kubernetes environment, there
@@ -518,26 +374,22 @@ A volume is required to store all logs streamed out from a Kubernetes
 cluster. The data will contain:
 
 -   Kubernetes logs
-
 -   Containers logs
-
 -   Applications logs
 
-*FluentD* has been used in our environment to stream logs.
+>*FluentD* has been used in our environment to stream logs.
 
 #### Total storage requirements
 
 This table summarizes the total required storage space.
 
-Components         Kind        Size
------------------- ----------- ---------------
-Cassandra          Dedicated   50GB per node
-SQL Database       Dedicated   20GB per node
-Events             Shared      13GB
-Storage for logs   Dedicated   100GB
-
-**\
-**[]{#_Toc27752124 .anchor}**Table** **3: Details of disk spaces**
+|Components         |Kind|      | Size|
+|------------------ |-----------| ---------------|
+|Cassandra          |Dedicated   |50GB per node|
+|SQL Database       |Dedicated   |20GB per node|
+|Events             |Shared      |13GB|
+|Storage for logs   |Dedicated   |100GB|
+*Table 3: Details of disk spaces*
 
 ### Load balancer
 
@@ -549,8 +401,7 @@ configured in this architecture. It performs important tasks of
 balancer is used inside a Kubernetes cluster to route all requests on a
 specific IP.
 
-![](/Images/apim-reference-architectures/container-aws/image5.JPG){width="3.9444444444444446in"
-height="1.645138888888889in"}
+![](/Images/apim-reference-architectures/container-aws/image5.JPG)
 
 ### Network
 
@@ -558,116 +409,30 @@ This typical network deployment is based on a minimal number of
 segregated zones. It consists of four subnets:
 
 -   Kubernetes master subnet
-
 -   Bastion subnet where administration tasks will be done
-
 -   Kubernetes worker nodes subnet
-
 -   Data subnet to host all databases and other kinds of storage
 
-![](/Images/apim-reference-architectures/container-aws/image6.png){width="6.884722222222222in"
-height="2.8375in"}Each subnet must be protected by a firewall with
+![](/Images/apim-reference-architectures/container-aws/image6.png)
+Each subnet must be protected by a firewall with
 appropriate inbound and outbound rules. See details in the following
 diagram (just one availability zone is shown) and table.
 
-+----+-----------+-----------+-----------+----------+---------+
-| ID | De        | From      | To        | Protocol | Ports   |
-|    | scription |           |           |          |         |
-+====+===========+===========+===========+==========+=========+
-| 1a | This flow | Public    | Load      | TCP      | 443     |
-|    | is the    | network\  | balancer  |          |         |
-|    | ingress   | intranet  |           |          |         |
-|    | between   |           |           |          |         |
-|    | consumers |           |           |          |         |
-|    | and the   |           |           |          |         |
-|    | load      |           |           |          |         |
-|    | balancer  |           |           |          |         |
-+----+-----------+-----------+-----------+----------+---------+
-| 1B | Flow with | Frontend  | K8S       | TCP      | 443     |
-|    | ingress   | subnet    | worker    |          |         |
-|    | c         |           | subnet    |          |         |
-|    | ontroller |           |           |          |         |
-+----+-----------+-----------+-----------+----------+---------+
-| 2  | Co        | K8S       | Data      | TCP      | 9042    |
-|    | nnections | worker    | subnet    |          |         |
-|    | from      | subnet    |           |          | 3306    |
-|    | Axway     |           |           |          |         |
-|    | c         |           |           |          |         |
-|    | omponents |           |           |          |         |
-|    | to        |           |           |          |         |
-|    | Cassandra |           |           |          |         |
-|    | and API   |           |           |          |         |
-|    | Analytics |           |           |          |         |
-+----+-----------+-----------+-----------+----------+---------+
-| 3  | Usage of  | Bastion   | K8S       | TCP      | 8001    |
-|    | K         | subnet    | master    |          |         |
-|    | ube-proxy |           | subnet    |          |         |
-|    | to access |           |           |          |         |
-|    | the       |           |           |          |         |
-|    | K         |           |           |          |         |
-|    | ubernetes |           |           |          |         |
-|    | Dashboard |           |           |          |         |
-+----+-----------+-----------+-----------+----------+---------+
-| 4  | Access to | Bastion   | Frontal   | TCP      | 443     |
-|    | the       | subnet    | subnet    |          |         |
-|    | admin     |           |           |          |         |
-|    | istration |           |           |          |         |
-|    | web       |           |           |          |         |
-|    | interface |           |           |          |         |
-|    | (ANM)     |           |           |          |         |
-+----+-----------+-----------+-----------+----------+---------+
-| 5  | Access    | Bastion   | Data      | TCP      | 3306    |
-|    | for       | subnet    | subnet    |          |         |
-|    | admin     |           |           |          | 9042    |
-|    | istration |           |           |          |         |
-|    | database  |           |           |          |         |
-|    | tasks     |           |           |          |         |
-+----+-----------+-----------+-----------+----------+---------+
-| 6  | Access to | Intranet  | Bastion   | TCP      | 3389    |
-|    | bastion   |           | subnet    |          |         |
-|    | hosts     |           |           |          | 22      |
-+----+-----------+-----------+-----------+----------+---------+
-| 7  | Egress    | K8S       | Public    | TCP      | 443     |
-|    | flow to   | worker    | network\  |          |         |
-|    | pull      | subnet    | intranet  |          |         |
-|    | Docker    |           |           |          |         |
-|    | images    |           |           |          |         |
-+----+-----------+-----------+-----------+----------+---------+
-|    | Egress    | K8S       | Public    | TCP      | 465-587 |
-|    | flow to   | worker    | network\  |          |         |
-|    | send      | subnet    | intranet  |          |         |
-|    | email to  |           |           |          |         |
-|    | SMTP      |           |           |          |         |
-|    | relay     |           |           |          |         |
-+----+-----------+-----------+-----------+----------+---------+
-|    | C         | K8S       | Public    | TCP      | 443     |
-|    | onnection | worker    | network\  |          |         |
-|    | to        | subnet    | intranet  |          |         |
-|    | external  |           |           |          |         |
-|    | identity  |           |           |          |         |
-|    | access    |           |           |          |         |
-|    | m         |           |           |          |         |
-|    | anagement |           |           |          |         |
-+----+-----------+-----------+-----------+----------+---------+
-| 8  | Egress to | Bastion   | Public    | TCP      | 443     |
-|    | pull Helm | subnet    | network\  |          |         |
-|    | package   |           | intranet  |          |         |
-|    | on Docker |           |           |          |         |
-|    | registry  |           |           |          |         |
-+----+-----------+-----------+-----------+----------+---------+
-| 9  | Bidi      | K8S       | K8S       | TCP      | 443     |
-|    | rectional | master    | master    |          |         |
-|    | comm      | subnet    | subnet    |          |         |
-|    | unication |           |           |          |         |
-|    | with *K8s |           |           |          |         |
-|    | API       |           |           |          |         |
-|    | server*   |           |           |          |         |
-|    | on master |           |           |          |         |
-|    | nodes     |           |           |          |         |
-+----+-----------+-----------+-----------+----------+---------+
-
-**\
-**[]{#_Toc27752125 .anchor}**Table** **4: Network flow rules**
+|ID|Description|From|To|Protocol|Ports|
+|----|----|----|----|----|----|
+|1a |This flow is the ingress between consumers and the load balancer	|Public network intranet |	Load balancer |TCP |443 |
+|1b |Flow with ingress controller	 |Frontend subnet	 |K8S worker subnet |TCP |443 |
+|2 |Connections from Axway components to Cassandra and API Analytics | K8S worker subnet|Data subnet |TCP |9042 3306 |
+|3 |Usage of Kube-proxy to access the Kubernetes Dashboard |Bastion subnet |K8S master subnet |TCP |8001 |
+|4 | Access to the administration web interface (ANM)|Bastion subnet |Frontal subnet |TCP |443 |
+|5 |Access for administration database tasks |Bastion subnet |Data subnet |TCP |9042 3306 |
+|6 |Access to bastion hosts |Intranet | Bastion subnet|TCP |3389 22 |
+|7 | Egress flow to pull Docker images|K8S worker subnet |Public network intranet |TCP |443 |
+| |Egress flow to send email to SMTP relay |K8S worker subnet |Public network intranet |TCP |465 587 |
+| | Connection to external identity access management| K8S worker subnet|Public network intranet |TCP |443 |
+|8 | Egress to pull Helm package on Docker registry|Bastion subnet |Public network intranet |TCP |443 |
+|9 |Bidirectional communication with K8s API server on master nodes |K8S master subnet |K8S master subnet |TCP |443 |
+*Table 4: Network flow rules*
 
 Kubernetes considerations
 -------------------------
@@ -682,10 +447,10 @@ Some parameters are available only at the creation of the Kubernetes
 cluster. The first is a network manager for communication between pods
 and the second is a set of strong permissions for Kubernetes.
 
-Description                                                                                                                                            Type
------------------------------------------------------------------------------------------------------------------------------------------------------- -------------
-Network CNI mode with a specific plugin (CALICO or Cloud provider) to secure pod connections with other applications or resources inside the cluster   Recommended
-Secure Kubernetes with RBAC capabilities                                                                                                               Recommended
+|Description|Type|
+|----|----|
+|Network CNI mode with a specific plugin (CALICO or Cloud provider) to secure pod connections with other applications or resources inside the cluster |Recommended|
+|Secure Kubernetes with RBAC capabilities | Recommended|
 
 #### Network plugin
 
@@ -714,16 +479,10 @@ Kubernetes. It's recommended to set people or application permissions to
 manage resources:
 
 -   Allow Helm to manage resources
-
 -   Allow worker nodes autoscaling
-
--   Allow specific users to view pods, to deploy pods, to access
-Kubernetes Dashboard
-
+-   Allow specific users to view pods, to deploy pods, to access Kubernetes Dashboard
 -   Allow cert-manager to pull and encrypt certificate
-
--   Allow Kubernetes to provide cloud resources, like storage or load
-balancer
+-   Allow Kubernetes to provide cloud resources, like storage or load balancer
 
 This is a minimal configuration and you can define more specific
 permissions with cluster roles or binding in the cluster.
@@ -754,9 +513,9 @@ responsibility of API team
 therefore, preventing errors. You just use a service name
 (*\<service-name\>*).
 
-Description                                               Type
---------------------------------------------------------- -------------
-Provide all API management assets in the same namespace   Recommended
+|Description|Type|
+|----|----|
+|Provide all API management assets in the same namespace   |Recommended|
 
 ### Pod resource limits
 
@@ -770,17 +529,14 @@ case a cluster is shared with other apps. When scheduling a pod
 deployment, Kubernetes uses these limits to ensure that resources for
 the pod are available on a target node.
 
-Description                                                                        Type
----------------------------------------------------------------------------------- -------------
-Limit memory and CPU usage to protect the cluster                                  Recommended
-Change Xmx value and resources limitations according to the size of worker nodes   Recommended
+|Description|Type|
+|----|----|
+|Limit memory and CPU usage to protect the cluster                                  |Recommended|
+|Change Xmx value and resources limitations according to the size of worker nodes   |Recommended|
 
 These are the recommended initial limits for AMPLIFY API Management
 components:
-
--   API Manager pod: 2cpu with 2GB memory and initial request of 0,5cpu
-with 0,5GB memory
-
+-   API Manager pod: 2cpu with 2GB memory and initial request of 0,5cpu with 0,5GB memory
 -   Admin Node Manager: memory resource limit of 2GB memory
 
 ### Components healthcheck
@@ -793,9 +549,9 @@ probes are respectively called "readiness probe" and "liveness probe."
 These probes are configured on all ports (traffic and UI) and use the
 HTTP/HTTPS protocol.
 
-Description                                                           Type
---------------------------------------------------------------------- ----------
-Implement Kubernetes probes to manage container status in real time   Required
+|Description|Type|
+|----|----|
+|Implement Kubernetes probes to manage container status in real time   |Required|
 
 ### Affinity and anti-affinity mode
 
@@ -808,9 +564,9 @@ reason, we recommend using a Kubernetes option called
 schedule the same replicas on the same node if it is possible based on
 the resource availability.
 
-Description                                                                                  Type
--------------------------------------------------------------------------------------------- ----------
-Dispatch APIM pods across available nodes (monitoring node can be excluded from this rule)   Required
+|Description|Type|
+|----|----|
+|Dispatch APIM pods across available nodes (monitoring node can be excluded from this rule)   |Required|
 
 ### Autoscaling
 
@@ -819,7 +575,6 @@ accommodate a workload, there are two scaling techniques used in the
 reference architecture:
 
 -   Nodes/VMs autoscaling
-
 -   Kubernetes pod autoscaling
 
 #### Node scaling
@@ -845,20 +600,15 @@ overall performance. An average CPU utilization of 75 percent is a good
 starting point. Keep in mind that to get HPA working, you need to define
 resource limits (notice, that our CPU limit is 2cpu, see section 3.3.3
 on page 18). This is an example of this setting in Helm:
-
-*metrics:*
-
-*- type: Resource*
-
-*resource:*
-
-*name: cpu*
-
-*target:*
-
-*type: Utilization*
-
-*averageUtilization: 75*
+```
+metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 75
+```
 
 ### External traffic
 
@@ -867,45 +617,37 @@ to external clients. It dynamically creates externally reachable URLs
 for desirable endpoints, load balance traffic between pods and terminate
 TLS connections. This mode is available only for HTTP and HTTPS.
 
-Description                                                                               Type
------------------------------------------------------------------------------------------ ----------
-Terminate TLS before a request reaches pods                                               Required
-Need specific DNS entry to route requests (solution with rewrite path isn't functional)   Required
+|Description|Type|
+|----|----|
+|Terminate TLS before a request reaches pods                                               |Required|
+|Need specific DNS entry to route requests (solution with rewrite path isn't functional)   |Required|
 
 A specific DNS entry is required to route requests to a service inside a
 Kubernetes cluster. These are the exposed interfaces in our
 configuration:
 
 -   *anm.FQDN* for API Gateway Manager UI
-
 -   *apimgmt.FQDN* for API Manager UI
-
 -   *apimgr.FQDN* for API traffic
 
 DNS records must match the certificate and ingress host configuration.
 These records must target the external IP used for the Kubernetes entry
 point.
 
+{{% alert title="Important" color="warning" %}}
+It’s not possible to use some rewrite-path like https://FQDN/Components/ to access the web interface
+{{% /alert %}}
+
 It's necessary to configure the following annotations for ingress
 configuration:
 
 -   Disable HTTP/2 if your ingress chooses it by default
-
 -   Authorized entry port (recommended to allow only HTTPS)
-
 -   An HTTPS redirection if HTTPS is authorized with the previous rules
-
 -   Force usage of TLS protocol v1.2
-
 -   Specify HTTPS protocol for a back end
-
-```{=html}
-<!-- -->
-```
 -   Localization of each certificate
-
--   A range IP authorization (optional, but recommended only for private
-access)
+-   A range IP authorization (optional, but recommended only for private access)
 
 Kubernetes lists available ingress controllers
 [here](https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/).
@@ -921,13 +663,13 @@ registry login and technical token for shared storage.
 
 Here is a table to list all the secrets used by pods:
 
-Admin Node Manager   API Gateway Manager   API Gateway Traffic   Ingress controller
------------------------ -------------------- --------------------- --------------------- --------------------
-Public certificate                                                                       X
-Docker registry login   X                    X                     X
-Cassandra user ID                            X                     X
-Shared storage ID       X                    X                     X
-SGBDR user ID           X
+| |Admin Node Manager   |API Gateway Manager   |API Gateway Traffic   |Ingress controller|
+|-|-------------------|--- -------------------- --------------------- --------------------- --------------------
+|Public certificate                                                                       X
+|Docker registry login   |X                    |X                     X
+|Cassandra user ID       |                     |X                     X
+|Shared storage ID       |X                    |X                     X
+|SGBDR user ID           |X|
 
 **\
 **[]{#_Toc27752126 .anchor}**Table** **5: Kubernetes secrets list**
