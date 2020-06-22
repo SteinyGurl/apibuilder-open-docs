@@ -383,7 +383,7 @@ cluster. The data will contain:
 
 This table summarizes the total required storage space.
 
-|Components         |Kind|      | Size|
+|Components         |Kind      | Size|
 |------------------ |-----------| ---------------|
 |Cassandra          |Dedicated   |50GB per node|
 |SQL Database       |Dedicated   |20GB per node|
@@ -665,18 +665,15 @@ Here is a table to list all the secrets used by pods:
 
 | |Admin Node Manager   |API Gateway Manager   |API Gateway Traffic   |Ingress controller|
 |-|-------------------|--- -------------------- --------------------- --------------------- --------------------
-|Public certificate                                                                       X
-|Docker registry login   |X                    |X                     X
-|Cassandra user ID       |                     |X                     X
-|Shared storage ID       |X                    |X                     X
-|SGBDR user ID           |X|
-
-**\
-**[]{#_Toc27752126 .anchor}**Table** **5: Kubernetes secrets list**
+|Public certificate      |                     |                     | |                      X|
+|Docker registry login   |X                    |X                     |X||
+|Cassandra user ID       |                     |X                     |X||
+|Shared storage ID       |X                    |X                     |X||
+|SGBDR user ID           |X||||
+*Table 5: Kubernetes secrets list*
 
 A more secure solution for handling sensitive data instead of secrets is
-[\"Sealed Secrets\" for
-Kubernetes](https://github.com/bitnami-labs/sealed-secrets) artifacts.
+[*Sealed Secrets* for Kubernetes](https://github.com/bitnami-labs/sealed-secrets) artifacts.
 
 Customers may also use a key management service available on their
 platform of choice as a more secure solution to store sensitive data.
@@ -688,8 +685,8 @@ This chapter describes API management components in Kubernetes.
 Following is a deployment diagram with a complete representation of the
 API management objects:
 
-![](/Images/apim-reference-architectures/container-aws/image7.png){width="7.263888888888889in"
-height="6.666666666666667in"}
+![](/Images/apim-reference-architectures/container-aws/image7.png)
+
 
 ### Admin Node Manager
 
@@ -718,8 +715,7 @@ To deploy you need to provide:
 
 -   Heap size memory as mentioned before (set the value at 1024)
 
--   Persistent storage with read/write multiple pods capabilities to
-store events
+-   Persistent storage with read/write multiple pods capabilities to store events
 
 -   RDBMS parameters
 
@@ -751,24 +747,22 @@ Pod characteristics:
 
 This pod supports an API Manager web interface (port 8075).
 
+{{% alert title="Important" color="warning" %}}
+As of Axway API Management v7.7, we recommend running only one API Manager UI pod. This pod is not used to process client requests, so using one pod is enough. It also simplifies architecture.
+{{% /alert %}}
+
 To build an API Manager container, you need to provide:
 
--   HTTPS certificate. This certificate will be used inside the cluster.
-It's possible to use a self-signed certificate. However, we
-recommend reviewing the usage of self-signed certs with your
-security team.
+-   HTTPS certificate. This certificate will be used inside the cluster. It's possible to use a self-signed certificate. However, we
+recommend reviewing the usage of self-signed certs with your security team.
 
 -   A license file with the EMT mode set.
 
--   A group name. It's mandatory because Admin Node Manager needs it to
-manage gateway.
+-   A group name. It's mandatory because Admin Node Manager needs it to manage gateway.
 
 -   JDBC library for the selected RDBMS.
 
--   A FED file with server settings and policies. It is also possible to
-use policy and environment package files. So, you can have one
-common policy package and several environment packages: one for each
-deployment environment.
+-   A FED file with server settings and policies. It is also possible to use policy and environment package files. So, you can have one common policy package and several environment packages: one for each deployment environment.
 
 To deploy you need to provide:
 
@@ -798,8 +792,7 @@ Pod characteristics:
 
 -   Kind: deployment
 
--   Exposed port UI 8075 (customers may configure a different port if
-needed)
+-   Exposed port UI 8075 (customers may configure a different port if needed)
 
 -   Resources limits: 2cpu & 2GB memory
 
@@ -827,6 +820,12 @@ container. The deployment parameters are the same. The only differences
 are in the Helm charts configuration: these are primarily the number of
 replicas and exposed ports.
 
+{{% alert title="Important" color="warning" %}}
+During development of the policies and server settings, you should use EMT_DEPLOYMENT_ENABLED flag when a container is started. This flag enables direct deployment of the Gateway configurations from Policy Studio. You will be able to develop and test your policies as with the classic deployment option. This option is recommended for running a small test environment using ***only one*** API gateway pod on a developer’s machine.
+It’s important ***not to use*** this flag in a production environment.
+Any testing in an upper environment (Test, QA, etc.) should be done ***using a Docker image*** build for that environment.
+{{% /alert %}}
+
 The Helm charts contain a precheck mechanism (*initContainers*) to check
 for required preconditions before this pod can be started. Those checked
 preconditions are:
@@ -845,8 +844,7 @@ Pod characteristics:
 
 -   Kind: deployment
 
--   Exposed traffic port 8065 (customers may configure a different port
-if needed)
+-   Exposed traffic port 8065 (customers may configure a different port if needed)
 
 -   Resources limits: 2cpu & 2GB memory
 
@@ -861,8 +859,7 @@ Cassandra considerations
 
 Cassandra must be hosted outside the cluster. Minimum three nodes are
 required: one node in each availability zone. Please see [the official
-documentation](https://docs.axway.com/bundle/APIGateway_77_CassandraGuide_allOS_en_HTML5/page/Content/CassandraTopics/CassandraStartPage.htm)
-on the Axway support website.
+documentation](https://docs.axway.com/bundle/APIGateway_77_CassandraGuide_allOS_en_HTML5/page/Content/CassandraTopics/CassandraStartPage.htm) on the Axway support website.
 
 Security considerations
 -----------------------
@@ -913,22 +910,17 @@ The following logs should be persisted:
 
 -   Trace files
 
--   Admin Node Manager: *INSTALL\_DIR/trace*
+-   Admin Node Manager: `INSTALL\_DIR/trace`
 
--   API Gateway instance:
-*INSTALL\_DIR/groups/\<group-id\>/\<instance-id\>/trace*
+-   API Gateway instance: `INSTALL\_DIR/groups/\<group-id\>/\<instance-id\>/trace`
 
--   Transaction audit log -- see [this
-documentation](https://docs.axway.com/bundle/APIGateway_77_AdministratorGuide_allOS_en_HTML5/page/Content/AdminGuideTopics/log_global_settings.htm).
+-   Transaction audit log -- see [this documentation](https://docs.axway.com/bundle/APIGateway_77_AdministratorGuide_allOS_en_HTML5/page/Content/AdminGuideTopics/log_global_settings.htm).
 
--   Transaction access log -- see [this
-documentation](https://docs.axway.com/bundle/APIGateway_77_AdministratorGuide_allOS_en_HTML5/page/Content/AdminGuideTopics/log_access_settings.htm).
+-   Transaction access log -- see [this documentation](https://docs.axway.com/bundle/APIGateway_77_AdministratorGuide_allOS_en_HTML5/page/Content/AdminGuideTopics/log_access_settings.htm).
 
--   Transaction event log -- see [this
-documentation](https://docs.axway.com/bundle/APIGateway_77_AdministratorGuide_allOS_en_HTML5/page/Content/AdminGuideTopics/log_event_settings.htm)
+-   Transaction event log -- see [this documentation](https://docs.axway.com/bundle/APIGateway_77_AdministratorGuide_allOS_en_HTML5/page/Content/AdminGuideTopics/log_event_settings.htm)
 
--   Open traffic event log -- see [this
-documentation](https://docs.axway.com/bundle/APIGateway_77_AdministratorGuide_allOS_en_HTML5/page/Content/AdminGuideTopics/log_open_traffic_event_settings.htm)
+-   Open traffic event log -- see [this documentation](https://docs.axway.com/bundle/APIGateway_77_AdministratorGuide_allOS_en_HTML5/page/Content/AdminGuideTopics/log_open_traffic_event_settings.htm)
 
 Environmentalization and Promotion
 ----------------------------------
@@ -940,8 +932,8 @@ Management uses two different artifacts:
 
 2.  API data files -- used by API Manager
 
-![](/Images/apim-reference-architectures/container-aws/image8.png){width="3.5805555555555557in"
-height="1.6208333333333333in"}The section below covers how the polices
+![](/Images/apim-reference-architectures/container-aws/image8.png)
+The section below covers how the polices
 are promoted from the development environment to the testing
 environment.
 
@@ -961,6 +953,7 @@ menu, and select *Allow environmentalization* *of fields*
 5.  Policy developers environmentalize environment-specific settings.
 For example:
 
+``
 -   *URL*, *User Name*, and *Password* fields in a Default Database
 Connection
 
@@ -970,11 +963,11 @@ Connection
 
 -   *URL*, *User Name*, *Password*, and *Signing Key* fields for an LDAP
 configuration
+```
 
 6.  Check-in the code to git.
 
-7.  CI pipeline checks out the code from git and uses
-[projpack](https://docs.axway.com/bundle/APIGateway_77_PromotionGuide_allOS_en_HTML5/page/Content/DeployPromoGuideTopics/deploy_package_tools.htm)
+7.  CI pipeline checks out the code from git and uses [projpack](https://docs.axway.com/bundle/APIGateway_77_PromotionGuide_allOS_en_HTML5/page/Content/DeployPromoGuideTopics/deploy_package_tools.htm)
 CLI to create a pol and env package. This can be done in the Policy
 Studio. When the active configuration is loaded, select *File \>
 Save \> Policy Package* to save the pol file and *Select File \>
@@ -983,15 +976,16 @@ Save \> Environment Package* to save the env file.
 8.  Policy Developer uses env package to create an environment-specific
 artifact (like test.env and prod.env).
 
-9.  Create a Docker container using pol and env package. See [this
-documentation](https://docs.axway.com/bundle/APIGateway_77_ContainerGuide_allOS_en_HTML5/page/Content/ContainerTopics/docker_script_gwimage.htm)
+9.  Create a Docker container using pol and env package. See [this documentation](https://docs.axway.com/bundle/APIGateway_77_ContainerGuide_allOS_en_HTML5/page/Content/ContainerTopics/docker_script_gwimage.htm)
 for more info.
 
 Example
 
-*./build\_gw\_image.py \--license=license.lic \--default-cert
-\--pol=banking.fed \\\
-\--env=test.env \--merge-dir /home/axway/apigateway*
+```
+./build_gw_image.py --license=license.lic --default-cert
+  --pol=banking.fed \
+  --env=test.env --merge-dir /home/axway/apigateway
+```
 
 10. Push Docker image to your Docker registry.
 
@@ -1002,8 +996,7 @@ API Manager promotion:
 
 -   API as code. The GitHub project can be used to create and promote an
 API across environments.
-
-<https://github.com/Axway-API-Management-Plus/apimanager-swagger-promote>.
+>https://github.com/Axway-API-Management-Plus/apim-cli.
 
 -   Promote API using export and import mechanism - [refer to this
 document](https://docs.axway.com/bundle/APIManager_77_APIMgmtGuide_allOS_en_HTML5/page/Content/APIManagementGuideTopics/api_mgmt_promote.htm).
@@ -1032,20 +1025,17 @@ architecture. These tests were executed with testing tools Postman or
 JMeter. A test is configured for **300 seconds** with a **loop of
 5 000 000 repetitions** and **20 threads**.
 
-Message size   Configuration   Minimal Threshold (transactions/sec)   Results (transactions/sec)
--------------- --------------- -------------------------------------- ----------------------------
-1Kb            Passthrough     \>1270                                 1270 \<\> 1930
-API key         \>800                                  800 \<\> 1465
-OAuth           \>745                                  1075 \<\> 1337
-10kb           Passthrough     \>1200                                 1340 \<\> 1600
-API key         \>750                                  781 \<\> 1535
-OAuth           \>670                                  670 \<\> 724
-50kb           API key         \>300                                  \~750
-100kb          Passthrough     \>100                                  150
-
-**\
-**[]{#_Toc27752127 .anchor}**Table** **6: Performance validation
-threshold**
+|Message size   |Configuration   |Minimal Threshold (transactions/sec)   |Results (transactions/sec)|
+|-------------- |--------------- |-------------------------------------- |----------------------------|
+|1Kb            |Passthrough     |>1270                                 |1270 <> 1930|
+|               |API key         |>800                                  |800 <> 1465|
+|               |OAuth           |>745                                  |1075 <> 1337|
+|10kb           |Passthrough     |>1200                                 |1340 <> 1600|
+|               |API key         |>750                                  |781 <> 1535|
+|               |OAuth           |>670                                  |670 <> 724|
+|50kb           |API key         |>300                                  |~750|
+|100kb          |Passthrough     |>100                                  |150|
+*Table 6: Performance validation threshold*
 
 Maintenance
 ===========
@@ -1072,8 +1062,9 @@ deploy a new Docker image:
 In general, the process of building AMPLIFY API Management Docker images
 for installation can be depicted as in the picture below.
 
-![](/Images/apim-reference-architectures/container-aws/image9.tmp){width="3.3333333333333335in"
-height="2.441666666666667in"}Description of the images:
+![](/Images/apim-reference-architectures/container-aws/image9.tmp)
+
+Description of the images:
 
 -   A base image includes a base product installation and doesn't change
 frequently. You update a base image only when you need to install an
@@ -1094,7 +1085,7 @@ and used by customers. The sample scripts are provided from the Axway
 support site. For example, a download file for AMPLIFY API Management
 v7.7 is:
 
-*APIGateway\_7.7-1\_DockerScripts.tar.gz*
+`APIGateway\_7.7-1\_DockerScripts.tar.gz`
 
 To streamline this process for building Docker images, Axway recommends
 creating a CI/CD pipeline that should, at least, include these tasks:
@@ -1132,34 +1123,29 @@ images
 Patch installation requires updating one or more files in the target
 product installation directory. To apply a patch, you need to overwrite
 one or more files when you build an ANM or Gateway/Manager images. The
-build scripts provide the *--merge-dir* option that allows you to
+build scripts provide the `--merge-dir` option that allows you to
 overwrite any file(s) in a Docker image. The example and additional
-explanation of the procedure can be found in [this
-section](https://docs.axway.com/bundle/APIGateway_77_ContainerGuide_allOS_en_HTML5/page/Content/ContainerTopics/container_patch_sp.htm).
+explanation of the procedure can be found in [this section](https://docs.axway.com/bundle/APIGateway_77_ContainerGuide_allOS_en_HTML5/page/Content/ContainerTopics/container_patch_sp.htm).
+
 The following is an example of a build command for a Gateway/Manager
 image:
 
+```
 *\
-./build\_gw\_image.py*
+./build\_gw\_image.py
+  --license=/tmp/api\_gw.lic
+  --domain-cert=certs/mydomain/mydomain-cert.pem
+  --domain-key=certs/mydomain/mydomain-key.pem
+  --domain-key-pass-file=/tmp/pass.txt
+  --parent-image=my-base:latest
+  --fed=my-group-fed.fed \--fed-pass-file=/tmp/my-group-fedpass.txt
+  --group-id=my-group
+  ***--merge-dir=/tmp/apigateway***
+```
 
-*\--license=/tmp/api\_gw.lic*
+![](/Images/apim-reference-architectures/container-aws/image10.png)
 
-*\--domain-cert=certs/mydomain/mydomain-cert.pem*
-
-*\--domain-key=certs/mydomain/mydomain-key.pem*
-
-*\--domain-key-pass-file=/tmp/pass.txt*
-
-*\--parent-image=my-base:latest*
-
-*\--fed=my-group-fed.fed \--fed-pass-file=/tmp/my-group-fedpass.txt*
-
-*\--group-id=my-group*
-
-***\--merge-dir=/tmp/apigateway***
-
-![](/Images/apim-reference-architectures/container-aws/image10.png){width="6.138888888888889in"
-height="1.475in"}The *--merge-dir* points to a directory that contains
+The *--merge-dir* points to a directory that contains
 file(s) that will replace specific installation files on a target Docker
 image. A merge directory must be named ***apigateway***. For example, if
 you need to update the *envSettings.props* file in a Gateway image, this
@@ -1170,48 +1156,38 @@ target Docker image.
 
 #### Step-by-step example
 
-Let's look at applying one of the patches for APIM v7.7 -- *APIGateway
-7.7-SP1 Patch17276*:
+Let's look at applying one of the patches for APIM v7.7 -- *APIGateway7.7-SP1 Patch17276*:
 
 1.  Download a patch from the support website
 
 2.  Create a merge directory:
 
-*mkdir /tmp/apigateway*
+`mkdir /tmp/apigateway`
 
 3.  Extract downloaded file into the merge directory:
 
-> *tar -xvzf
-> APIGateway\_7.7-SP1\_Patch17276\_d16e79fb\_allOS\_BN20191024.tgz -C
-> /tmp/apigateway/*
+```
+tar -xvzf APIGateway\_7.7-SP1\_Patch17276\_d16e79fb\_allOS\_BN20191024.tgz -C /tmp/apigateway/
+```
 
-4.  ![](/Images/apim-reference-architectures/container-aws/image11.png){width="5.743055555555555in"
-height="1.1111111111111112in"}If you look at the merge directory,
-you will see that two files will be written to a target Docker image
-during build:
+4.  If you look at the merge directory, you will see that two files will be written to a target Docker image during build:
+![](/Images/apim-reference-architectures/container-aws/image11.png)
 
 5.  Now you can run your build script specifying the merge directory
 that you've created:
 
-*./build\_gw\_image.py*
-
-*\--license=/tmp/api\_gw.lic*
-
-*\--domain-cert=certs/mydomain/mydomain-cert.pem*
-
-*\--domain-key=certs/mydomain/mydomain-key.pem*
-
-*\--domain-key-pass-file=/tmp/pass.txt*
-
-*\--parent-image=my-base:latest*
-
-*\--fed=my-group-fed.fed \--fed-pass-file=/tmp/my-group-fedpass.txt*
-
-*\--group-id=my-group*
-
-***\--merge-dir=/tmp/apigateway***
-
-*\--out-image=my-gtw:7.7-SP1-p17276*
+```
+./build\_gw\_image.py
+  --license=/tmp/api\_gw.lic
+  --domain-cert=certs/mydomain/mydomain-cert.pem
+  --domain-key=certs/mydomain/mydomain-key.pem
+  --domain-key-pass-file=/tmp/pass.txt
+  --parent-image=my-base:latest
+  --fed=my-group-fed.fed \--fed-pass-file=/tmp/my-group-fedpass.txt
+  --group-id=my-group
+  ***--merge-dir=/tmp/apigateway***
+  --out-image=my-gtw:7.7-SP1-p17276
+```
 
 6.  Two files from the patch will overwrite (or create) corresponding
 files in the new Docker image.
@@ -1225,13 +1201,9 @@ product plus a corresponding service pack. As an example, we look at
 AMPLIFY API Management v7.7 and API Management v7.7 with SP1install
 files:
 
--   API Management v7.7 install is titled: *API Gateway and API Manager
-7.7 Install (linux-x86-64)* with the following file -
-*APIGateway\_7.7\_Install\_linux-x86-64\_BN4.run*
+-   API Management v7.7 install is titled: *API Gateway and API Manager 7.7 Install (linux-x86-64)* with the following file - `APIGateway\_7.7\_Install\_linux-x86-64\_BN4.run`
 
--   API Management v7.7 with SP1install is titled: *API Gateway 7.7
-Install Service Pack 1 (linux-x86-64)* with the following file -
-*APIGateway\_7.7\_SP1\_linux-x86-64\_BN201908271.run*
+-   API Management v7.7 with SP1install is titled: *API Gateway 7.7 Install Service Pack 1 (linux-x86-64)* with the following file - `APIGateway\_7.7\_SP1\_linux-x86-64\_BN201908271.run`
 
 The build process will be identical to the one described in section 4.1
 New configurations.
@@ -1242,8 +1214,7 @@ Upgrading your existing deployment to a new version of AMPLIFY API
 Management will be similar to a process described in section *4.1* *New
 configurations*. But there are some additional steps to migrate your
 existing Gateway/Manager configuration using Policy Studio. The
-[following
-section](https://docs.axway.com/bundle/APIGateway_77_ContainerGuide_allOS_en_HTML5/page/Content/ContainerTopics/container_upgrade.htm)
+[following section](https://docs.axway.com/bundle/APIGateway_77_ContainerGuide_allOS_en_HTML5/page/Content/ContainerTopics/container_upgrade.htm)
 in the documentation describes this process for API Management v7.7. The
 extra steps are needed to import your existing .fed file in Policy
 Studio. This will trigger an automatic update to your FED file. When
@@ -1269,14 +1240,12 @@ environment), we rely on Kubernetes rolling updates that are supported
 under the **Deployment** object. This object has a section that governs
 the process of updating running containers with a new Docker image. This
 is an example of an update strategy specification:
-
-*strategy:*
-
-*type: RollingUpdate*
-
-*rollingUpdate:*
-
-*maxUnavailable: 1*
+```
+strategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxUnavailable: 1
+```
 
 With the rolling update, Kubernetes will take down a designated number
 of pods, update them with a new image, and start. Then continue this
@@ -1293,10 +1262,9 @@ percent). For example, if there are four pods in your Deployment, then
 during a rolling update, the maximum number of pods with old and new
 configurations combined can't be more than 5:
 
-> *4 pods (100%) + 1 pod (25% - maxSurge) = 5 pods (125%)*
+`4 pods (100%) + 1 pod (25% - maxSurge) = 5 pods (125%)`
 
-You can read the [following
-articles](https://kubernetes.io/blog/2018/04/30/zero-downtime-deployment-kubernetes-jenkins/)
+You can read the [following articles](https://kubernetes.io/blog/2018/04/30/zero-downtime-deployment-kubernetes-jenkins/)
 to better understand rolling updates and other techniques for a zero
 downtime deployment.
 
@@ -1321,8 +1289,7 @@ in the EMT mode. Thus, a Docker registry is required.
 RDBMS.
 
 -   Cassandra -- follow recommendations in the official documentation
-for the Cassandra backup (see
-[this](https://docs.axway.com/bundle/APIGateway_77_CassandraGuide_allOS_en_HTML5/page/Content/CassandraTopics/cassandra_BUR.html)).
+for the Cassandra backup (see [this](https://docs.axway.com/bundle/APIGateway_77_CassandraGuide_allOS_en_HTML5/page/Content/CassandraTopics/cassandra_BUR.html)).
 You will need to decide how frequently you should back up Cassandra.
 This decision will be impacted by what data you store in Cassandra.
 Is it only API Manager data? Or does it include OAuth tokens and
@@ -1332,19 +1299,13 @@ daily backup may be a good starting point.
 
 There are a couple of good blogs on backing up and restoring Cassandra:
 
--   [Cassandra Backup and Restore - Backup in AWS using EBS
-Volumes](https://thelastpickle.com/blog/2018/04/03/cassandra-backup-and-restore-aws-ebs.html)
+-   [Cassandra Backup and Restore - Backup in AWS using EBS Volumes](https://thelastpickle.com/blog/2018/04/03/cassandra-backup-and-restore-aws-ebs.html)
 
--   [Medusa - Spotify's Apache Cassandra backup tool is now open
-source](https://thelastpickle.com/blog/2019/11/05/cassandra-medusa-backup-tool-is-open-source.html)
+-   [Medusa - Spotify's Apache Cassandra backup tool is now open source](https://thelastpickle.com/blog/2019/11/05/cassandra-medusa-backup-tool-is-open-source.html)
 
-```{=html}
-<!-- -->
-```
 -   Log/trace/even files -- your backup strategy will depend on your
 choice of infrastructure. For running on AWS, we use AWS S3 service
-that has high durability and reliability metrics (see
-[here](https://docs.aws.amazon.com/AmazonS3/latest/dev/DataDurability.html)).
+that has high durability and reliability metrics (see [here](https://docs.aws.amazon.com/AmazonS3/latest/dev/DataDurability.html)).
 Log files are not required to run API Gateway. Thus, if you use AWS
 S3 service (or similar), there is no need to back up log files. If
 log file storage is temporarily unavailable, it shouldn't affect the
@@ -1400,11 +1361,11 @@ You can view all roadmaps on Axway Community Portal
 Appendix A -- Glossary of Terms
 ===============================
 
-Reference   Description
------------ ----------------------------------------------------------------------------------------------
-SAML        Security Assertion Markup Language -- based on XML, this protocol permits SSO authentication
-SSO         Single Sign-On -- unique authentication for a user
-K8S         Short name of Kubernetes product
-FED         The file extension of the federated deployment package (policy + environment packages)
-POL         The file extension of a policy package file
-ENV         File extension of an environment package file
+|Reference   |Description|
+|----------- |----------------------------------------------------------------------------------------------|
+|SAML        |Security Assertion Markup Language -- based on XML, this protocol permits SSO authentication|
+|SSO         |Single Sign-On -- unique authentication for a user|
+|K8S         |Short name of Kubernetes product|
+|FED         |The file extension of the federated deployment package (policy + environment packages)|
+|POL         |The file extension of a policy package file|
+|ENV         |File extension of an environment package file|
