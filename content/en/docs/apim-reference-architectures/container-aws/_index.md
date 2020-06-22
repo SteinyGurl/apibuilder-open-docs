@@ -664,7 +664,7 @@ registry login and technical token for shared storage.
 Here is a table to list all the secrets used by pods:
 
 | |Admin Node Manager   |API Gateway Manager   |API Gateway Traffic   |Ingress controller|
-|-|-------------------|--- -------------------- --------------------- --------------------- --------------------
+|---|-------------------|--- --------------------| --------------------- |---------------------|
 |Public certificate      |                     |                     | |                      X|
 |Docker registry login   |X                    |X                     |X||
 |Cassandra user ID       |                     |X                     |X||
