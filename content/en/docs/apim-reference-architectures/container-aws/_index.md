@@ -1122,14 +1122,14 @@ The following is an example of a build command for a Gateway/Manager
 image:
 
 ```
-*\
 ./build\_gw\_image.py
-  --license=/tmp/api\_gw.lic
+  --license=/tmp/api_gw.lic
   --domain-cert=certs/mydomain/mydomain-cert.pem
   --domain-key=certs/mydomain/mydomain-key.pem
   --domain-key-pass-file=/tmp/pass.txt
   --parent-image=my-base:latest
-  --fed=my-group-fed.fed \--fed-pass-file=/tmp/my-group-fedpass.txt
+  --fed=my-group-fed.fed
+  --fed-pass-file=/tmp/my-group-fedpass.txt
   --group-id=my-group
   ***--merge-dir=/tmp/apigateway***
 ```
@@ -1174,7 +1174,8 @@ that you've created:
   --domain-key=certs/mydomain/mydomain-key.pem
   --domain-key-pass-file=/tmp/pass.txt
   --parent-image=my-base:latest
-  --fed=my-group-fed.fed \--fed-pass-file=/tmp/my-group-fedpass.txt
+  --fed=my-group-fed.fed
+  --fed-pass-file=/tmp/my-group-fedpass.txt
   --group-id=my-group
   ***--merge-dir=/tmp/apigateway***
   --out-image=my-gtw:7.7-SP1-p17276
