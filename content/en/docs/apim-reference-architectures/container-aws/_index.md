@@ -361,7 +361,8 @@ the minimal configuration. But autoscaling can increase this number to
 Please, follow this method to estimate disk space:
 
 ![](/Images/apim-reference-architectures/container-aws/image4.png)
->Max_disk_space x API_gateway_max_replica + 1GB = recommended_disk_space
+
+> Max_disk_space x API_gateway_max_replica + 1GB = recommended_disk_space
 
 It is important to select a proper disk option for logs in your target
 environment (cloud or on-premises). In the Kubernetes environment, there
