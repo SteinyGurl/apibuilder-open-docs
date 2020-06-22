@@ -962,9 +962,7 @@ For example:
 
 7.  CI pipeline checks out the code from git and uses [projpack](https://docs.axway.com/bundle/APIGateway_77_PromotionGuide_allOS_en_HTML5/page/Content/DeployPromoGuideTopics/deploy_package_tools.htm)
 CLI to create a pol and env package. This can be done in the Policy
-Studio. When the active configuration is loaded, select *File \>
-Save \> Policy Package* to save the pol file and *Select File \>
-Save \> Environment Package* to save the env file.
+Studio. When the active configuration is loaded, `Select File > Save > Policy Package` to save the pol file and `Select File > Save > Environment Package` to save the env file.
 
 8.  Policy Developer uses env package to create an environment-specific
 artifact (like test.env and prod.env).
