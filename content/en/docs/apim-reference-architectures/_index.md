@@ -1,9 +1,9 @@
 {
-"title": "Axway AMPLIFY™ API Management Reference Architectures",
-"linkTitle": "API Management Container Architectures",
+"title": "API management reference architectures",
+"linkTitle": "API management reference architectures",
 "weight": 20,
 "date": "2020-06-22",
-"description": "Reference Architectures"
+"description": "Reference architectures for Axway AMPLIFY API Management."
 }
 
-In this section you'll find several Reference Architectures guides for the Axway's API Management solution deployed in several configurations.
+This section contains reference architectures for the AMPLIFY API Management solution deployed in several configurations.
