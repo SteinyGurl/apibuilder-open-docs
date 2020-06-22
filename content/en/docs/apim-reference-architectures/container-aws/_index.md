@@ -953,17 +953,10 @@ menu, and select *Allow environmentalization* *of fields*
 5.  Policy developers environmentalize environment-specific settings.
 For example:
 
-```
--   *URL*, *User Name*, and *Password* fields in a Default Database
-Connection
-
+-   *URL*, *User Name*, and *Password* fields in a Default Database Connection
 -   *URL* field in a Connect to URL filter
-
 -   *X.509 Certificate* field in an HTTPS interface
-
--   *URL*, *User Name*, *Password*, and *Signing Key* fields for an LDAP
-configuration
-```
+-   *URL*, *User Name*, *Password*, and *Signing Key* fields for an LDAP configuration
 
 6.  Check-in the code to git.
 
